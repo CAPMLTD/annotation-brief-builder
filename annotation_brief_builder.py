@@ -658,6 +658,22 @@ Respond in JSON only:
                             st.success("✅ All rulings consistent with your defined rules.")
 
     st.markdown("---")
+
+    # Use case readiness summary
+    if use_cases:
+        low_score_ucs = []
+        for i, uc in enumerate(use_cases):
+            score = st.session_state.stress_tests.get(f"score_{i}", None)
+            if score and score < 6:
+                low_score_ucs.append(f"**{uc['name']}** (score: {score}/10)")
+
+        if len(use_cases) < 2:
+            st.warning(f"⚠️ You have defined **{len(use_cases)} use case**. We strongly recommend defining all use cases before generating — briefs with incomplete use case coverage will score poorly and cannot be distributed to annotators. Add more use cases above or continue if this is intentional.")
+        elif low_score_ucs:
+            st.warning(f"⚠️ The following use cases have low Confirmability Scores and should be reviewed before continuing: {', '.join(low_score_ucs)}. Consider revising the Confirmability Rules.")
+        else:
+            st.success(f"✅ {len(use_cases)} use case(s) defined. All Confirmability Scores acceptable.")
+
     col1, col2 = st.columns([1, 4])
     with col1:
         if st.button("← Back"):
